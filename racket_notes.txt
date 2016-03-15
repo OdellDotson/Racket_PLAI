@@ -1,0 +1,40 @@
+(define-type ArithC
+     [numC (n:number)]
+     [plusC (l: ArithC ) (r: ArithC )]
+     [multC (l: ArithC ) (r: ArithC )]
+)
+
+(numC 4)
+(plusC (numC 4) (numC 5))
+
+; interp : ArithC -> number
+; Interpretes an arithC program into it’s resulting answer
+
+(define (interp [a:ArithC]) : number  ) ; this one specifies that a is an ArithC and output is a number
+(define (interp a:)  )
+
+(define (interp [a:ArithC]) : number
+     (type-case ArithC a
+          [numC (n) n]
+          [plusC (l r) (+ (interp l) (interp r))]
+          [multC (l r) (* (interp l) (interp r))]))
+
+test (interp (numC 4) 4)
+test (interp (plusC (numC 4) (numC 3))) 7)
+
+(parse (+3 (* 2 4))) ; would evaluate the math first. We need
+(parse '(+3 (* 2 4))) ; This makes it simply a list.
+>'(+3 (* 2 4))
+s-expression ; This is the the of a list created like this
+
+(define (parse [s: s-expressipn]) : ArithC
+     (cond [(s-exp-numer? s) (numC (s-esp->number s))]
+           [(s-esp-list? s)
+               (let ([sl (s-exp->list s)])
+                    (case s-ezp->symbol (first sl))
+                         [(+) (plusC (parse (second sl)) (parse (third sl)))]
+                         [(*) (multC (parse (second sl)) (parse (third sl)))]
+ ...)
+
+(test (parse ‘(+ 3 4)) (plusC (numC 3) (numC 4)))
+(test (parse ‘5) (numC 5))

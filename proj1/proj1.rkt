@@ -90,8 +90,6 @@
 (define tgs1 (graduate "GS1" (scores 70 75 "pass") "PhD"))
 (define tgs2 (graduate "GS2" (scores 35 40 "fail") "MS"))
 
-
-
 (test (assign-grades (list ugs1 ugs2 gs1 gs2)) (list tugs1 tugs2 tgs1 tgs2))  
 
 
@@ -110,9 +108,86 @@
 								])])])) (assign-grades los) )));false
 
 "Problem 8 Tests"
+
+(define gs3 (graduate "GS3" (scores 50 20 "Ungraded") "PhD"))
+(define gs4 (graduate "GS4" (scores 80 80 "Ungraded") "PhD"))
+(define gs5 (graduate "GS5" (scores 10 10 "Ungraded") "PhD"))
+
 (test (all-phd-pass? (list gs1 gs2)) #t)
 (test (all-phd-pass? (list gs1)) #t)
+(test (all-phd-pass? (list ugs1 ugs2 gs1 gs2)) #t)
+(test (all-phd-pass? (list gs3 gs4 gs5)) #f)
+
+
+;;Problem 9
+
+;;Returns a list broken on -999
+(define (listBreaker lorf)
+	(cond 	[(empty? lorf) (list)]
+		[(= (first lorf) -999) (list)]
+		[else (cons (first lorf)(listBreaker(rest lorf)))]))
+
+;;Returns a list only of the positive numbers
+(define (validList lorf)
+	(cond 	[(empty? lorf) (list)]	
+		[(< (first lorf) 0) (validList(rest lorf))]
+		[else (cons(first lorf)(validList(rest lorf)))]))
+
+;;Calcualtes avg. rainfall based on the rules of the problem
+(define (rainfall lorf)
+	(cond 	[(empty? lorf) 0]
+		[(cons? lorf)	
+			(/ (sum(validList (listBreaker lorf)))  (length (validList (listBreaker lorf))))]))
 
 
 
+"Problem 9 Tests"
 
+(test (listBreaker (list 1 2 -999 3)) (list 1 2))
+(test (listBreaker (list 1 2 3)) (list 1 2 3))
+(test (validList (list 1 2 -999 3)) (list 1 2 3))
+(test (validList (listBreaker(list 1 2 -3 -4 -999 5))) (list 1 2))
+(test (rainfall (list 1 2 3)) 2)
+(test (rainfall (list 1 2 3 -999 4 5 6)) 2)
+(test (rainfall (list 1 2 3 -4 -5 -6 -999 4 5 6 -8 9)) 2)
+
+
+;; Problem 10
+(define-type CartItem
+     [item (name : string) (price : number)])   
+
+(define (countPrices loi)
+	(sum (map item-price loi)))
+
+
+(define (isHat product)
+	(string=? (item-name product) "hat" ))
+
+(define (isShoe product)
+	(string=? (item-name product) "shoes"))
+
+(define (twoHats loi)
+	(>=   (length (filter  isHat loi))   2))
+
+(define (countShoePrice loi)
+	(countPrices(filter isShoe loi)))
+
+(define (lowerPricesShoes loi)
+	(map (lambda (x) 
+		(cond	[(isShoe x) (item (item-name x) (* (item-price x) .8))]
+			[else x])) loi))
+
+(define (checkout loi)
+	(cond 	[(twoHats loi) 
+			(- (cond[(> (countShoePrice loi) 100) (countPrices (lowerPricesShoes loi))]
+				[else (countPrices loi)])10)]
+		[else(cond[(> (countShoePrice loi) 100) (countPrices (lowerPricesShoes loi))]
+                          [else (countPrices loi)]) ]))
+
+
+"Problem 10 tests"
+(define SC1 (list (item "shoes" 25) (item "bag" 50) (item "shoes" 85) (item "hat" 15)))
+(define SC2 (list (item "hat" 20) (item "shoes" 10)))
+(define SC3 (list (item "other" 25)))
+
+(test (checkout SC1) 153);

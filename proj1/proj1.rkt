@@ -43,12 +43,18 @@
 (test (raise (list 1 -2 3)) (list 1 0 3))
 
 
-;Problem 4
-;(define (alternating lta)
-;	
-;)
+;;Problem 4
+(define (alternating lta)
+	(cond 	[(empty? lta) (list)]
+		[else 
+			(cond 	[(empty? lta) (list)]
+				[(= (modulo (length lta) 2)0) (alternating (rest lta))]
+				[else (cons (first lta) (alternating (rest lta)))])]))
 
-;(test (alternating (list 1 2 3 4 5)) (list 1 3 5))
+"Problem 4 tests"
+(test (alternating (list 1 2 3 4 5)) (list 1 3 5))
+(test (alternating (list 1)) (list 1))
+(test (alternating (list "Only" "Nan" " show" "NaN" " these" "NaN" " words.")) (list "Only" " show" " these" " words."))
 
 
 ;; Problem 5
@@ -179,9 +185,9 @@
 
 (define (checkout loi)
 	(cond 	[(twoHats loi) 
-			(- (cond[(> (countShoePrice loi) 100) (countPrices (lowerPricesShoes loi))]
+			(- (cond[(>= (countShoePrice loi) 100) (countPrices (lowerPricesShoes loi))]
 				[else (countPrices loi)])10)]
-		[else(cond[(> (countShoePrice loi) 100) (countPrices (lowerPricesShoes loi))]
+		[else(cond[(>= (countShoePrice loi) 100) (countPrices (lowerPricesShoes loi))]
                           [else (countPrices loi)]) ]))
 
 
@@ -189,5 +195,11 @@
 (define SC1 (list (item "shoes" 25) (item "bag" 50) (item "shoes" 85) (item "hat" 15)))
 (define SC2 (list (item "hat" 20) (item "shoes" 10)))
 (define SC3 (list (item "other" 25)))
+(define SC4 (list (item "hat" 10) (item "hat" 20)))
+(define SC5 (list (item "shoes" 100)))
 
 (test (checkout SC1) 153);
+(test (checkout SC2) 30);
+(test (checkout SC3) 25);
+(test (checkout SC4) 20);
+(test (checkout SC5) 80);
